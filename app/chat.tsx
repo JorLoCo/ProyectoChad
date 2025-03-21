@@ -1,0 +1,63 @@
+import React,{useState, useEffect} from "react";
+import { ActivityIndicator, Button, FlatList, Text, TextInput, View } from "react-native";
+import { connectSocket } from "../src/socket";
+import { Socket } from "socket.io-client";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+export default function () {
+    const [socket, setSocket] = useState<Socket | undefined>(undefined);
+    const [messages, setMessages] = useState<string[]>([]);
+    const [message, setMessage] = useState<string>("");
+    const [isloading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        connectSocket().then((socket) => {
+            setSocket(socket);
+            setLoading(false);
+        });
+        return () => {
+            if(socket) {
+                socket?.disconnect();
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        socket?.on("message", (message: string) => {
+            setMessages((messages) => [...messages, message]);
+        });
+        return () => {
+            socket?.off("message");
+        }
+    }, [socket]);
+
+    const sendMessage = () => {
+        if(message.trim()) {
+            socket?.emit("message", message);
+            setMessage("");
+        }
+    }
+
+    if(isloading) {
+        return <ActivityIndicator size="large" color="#0000ff" />
+    }
+
+    return (
+        <SafeAreaView style={{flex: 1, justifyContent: "center", padding: 20}}>
+            <FlatList
+                data={messages}
+                renderItem={({item}) => <Text>{item}</Text>}
+                keyExtractor={(_, index) => index.toString()}
+            />
+            <View style={{flexDirection: "row"}}>
+                <TextInput
+                    style={{flex: 1, borderWidth: 1, borderColor: "green"}}
+                    value={message}
+                    onChangeText={setMessage}
+                    placeholder="Escribe un mensaje pues"
+                />
+                <Button title="Mandar" onPress={sendMessage} />
+            </View>
+        </SafeAreaView>
+    );
+}
