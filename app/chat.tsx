@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from "react";
-import { ActivityIndicator, Button, FlatList, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Button, FlatList, Text, TextInput, StyleSheet, View } from "react-native";
 import { connectSocket } from "../src/socket";
 import { Socket } from "socket.io-client";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -46,7 +46,7 @@ export default function () {
         <SafeAreaView style={{flex: 1, justifyContent: "center", padding: 20}}>
             <FlatList
                 data={messages}
-                renderItem={({item}) => <Text>{item}</Text>}
+                renderItem={({item}) => <Text style={styles.textito}>{item}</Text>}
                 keyExtractor={(_, index) => index.toString()}
             />
             <View style={{flexDirection: "row"}}>
@@ -61,3 +61,16 @@ export default function () {
         </SafeAreaView>
     );
 }
+const styles = StyleSheet.create({
+    textito: {
+        marginVertical: 5,
+        fontSize: 16, 
+        color: "white", 
+        backgroundColor: "darkgreen",
+        paddingHorizontal: 10, 
+        paddingVertical: 5,
+        borderRadius: 5, 
+        alignSelf: "flex-start",
+        fontWeight: "bold"
+    }
+});
