@@ -3,10 +3,11 @@ import { ActivityIndicator, Button, FlatList, Text, TextInput, StyleSheet, View 
 import { connectSocket } from "../src/socket";
 import { Socket } from "socket.io-client";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ChatMessage } from "../src/models/chatMessage";
 
 export default function () {
     const [socket, setSocket] = useState<Socket | undefined>(undefined);
-    const [messages, setMessages] = useState<string[]>([]);
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [message, setMessage] = useState<string>("");
     const [isloading, setLoading] = useState<boolean>(true);
 
@@ -23,7 +24,7 @@ export default function () {
     }, []);
 
     useEffect(() => {
-        socket?.on("message", (message: string) => {
+        socket?.on("message", (message: ChatMessage) => {
             setMessages((messages) => [...messages, message]);
         });
         return () => {
@@ -46,7 +47,7 @@ export default function () {
         <SafeAreaView style={{flex: 1, justifyContent: "center", padding: 20}}>
             <FlatList
                 data={messages}
-                renderItem={({item}) => <Text style={styles.textito}>{item}</Text>}
+                renderItem={({item}) => <Text style={styles.textito}>{item.message}</Text>}
                 keyExtractor={(_, index) => index.toString()}
             />
             <View style={{flexDirection: "row"}}>
