@@ -1,9 +1,9 @@
 import React,{useState, useEffect} from "react";
 import { ActivityIndicator, Button, FlatList, Text, TextInput, StyleSheet, View, ViewStyle } from "react-native";
-import { connectSocket } from "../src/socket";
+import { connectSocket } from "../../src/socket";
 import { Socket } from "socket.io-client";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ChatMessage } from "../src/models/chatMessage";
+import { ChatMessage } from "../../src/models/chatMessage";
 import { push } from "expo-router/build/global-state/routing";
 import { useLocalSearchParams } from "expo-router";
 
@@ -13,22 +13,29 @@ type MessageBubbleProps = {
 }
 const MessageBubble = ({chatMessage, mySocketID}:MessageBubbleProps) => {
     let bubbleStyle = [styles.tumensaje];
+    let ownMessage = chatMessage.socketID == mySocketID;
+    if(ownMessage) {
+        if(chatMessage.socketID == mySocketID) {
+            bubbleStyle.push(styles.mimensaje);
+        }
 
-    if(chatMessage.socketID == mySocketID) {
-        bubbleStyle.push(styles.mimensaje);
     }
     if(chatMessage.socketID == "server") {
         bubbleStyle.push(styles.mensajeserver);
     }
     
     return (
-        <Text style={bubbleStyle}>{chatMessage.message}</Text>
+        <View>
+            {!ownMessage && <Text style={styles.nombreusuario}>{chatMessage.user}</Text>}
+            <Text style={bubbleStyle}>{chatMessage.message}</Text>
+        </View>
+        
     );
 
 };
 
 type lsp = {
-    usuario: string;
+    user: string;
 };
 
 export default function () {
@@ -37,10 +44,10 @@ export default function () {
     const [message, setMessage] = useState<string>("");
     const [isloading, setLoading] = useState<boolean>(true);
     const [mySocketID, setMySocketID] = useState<string>();
-    const {usuario} = useLocalSearchParams<lsp>();
+    const {user} = useLocalSearchParams<lsp>();
 
     useEffect(() => {
-        connectSocket(usuario).then((socket) => {
+        connectSocket(user).then((socket) => {
             setSocket(socket);
             setLoading(false);
             setMySocketID(socket?.id);
@@ -129,5 +136,10 @@ const styles = StyleSheet.create({
         borderRadius: 5, 
         alignSelf: "center",
         fontWeight: "bold"
+    } as ViewStyle,
+    nombreusuario: {
+        fontSize: 12,
+        color: "black",
+        fontWeight: "bold",
     } as ViewStyle
 });

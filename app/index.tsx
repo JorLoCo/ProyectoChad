@@ -10,7 +10,7 @@ export default () => {
             <Stack.Screen options={{headerShown: false}}/>
             <Text>Bienvenido al chat</Text>
             <TextInput style={styles.campoTexto} placeholder="Usuario" value={username} onChangeText={t => setUsername(t)}/>
-            <Link href={{pathname: "/chat", params:{usuario: username}}} asChild>
+            <Link href={{pathname: "/chat", params:{user: username}}} asChild>
                 <Button title="Entrar" />
             </Link>
             <Link href="/settings">
